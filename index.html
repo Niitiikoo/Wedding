@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💍 Daniel & Yordanos — Our Wedding</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Georgia', serif; }
+        :root { --rose: #9c3d54; --soft-pink: #fff5f3; --cream: #fffbf9; --gold: #c89f59; --text: #4a3c3c; }
+        body { background: var(--cream); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        .page { display: none; min-height: 100vh; padding: 2rem 1rem; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+        
+        h1, h2 { text-align: center; color: var(--rose); }
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+        .couple-names { font-size: 2rem; font-style: italic; color: var(--rose); text-align: center; margin: 1rem 0; }
+        .subhead { text-align: center; color: #777; margin-bottom: 2rem; }
+        
+        .card { background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 8px 30px rgba(156,61,84,0.12); max-width: 500px; margin: 0 auto; }
+        input, textarea { width: 100%; padding: 0.9rem 1rem; border: 2px solid #f0d9dc; border-radius: 12px; font-size: 1rem; margin: 0.5rem 0 1.2rem; outline: none; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--rose); }
+        .btn { background: linear-gradient(135deg, var(--rose), #b84a63); color: white; border: none; padding: 0.95rem 2rem; border-radius: 30px; font-size: 1.05rem; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 0.5rem; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(156,61,84,0.25); }
+        .btn-outline { background: transparent; border: 2px solid var(--rose); color: var(--rose); }
+        .btn-outline:hover { background: var(--rose); color: white; }
+        
+        .camera-box { text-align: center; padding: 2rem; }
+        #selfiePreview { width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 4px solid var(--gold); margin: 1rem; display: none; }
+        video { border-radius: 16px; max-width: 100%; margin: 1rem 0; }
+        
+        .welcome-screen { text-align: center; padding: 3rem 1rem; }
+        .heart { font-size: 4rem; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.15);} 100%{transform:scale(1);} }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 2rem 0; }
+        .menu-card { background: white; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
+        .menu-card:hover { border-color: var(--rose); transform: translateY(-4px); box-shadow: 0 6px 20px rgba(156,61,84,0.15); }
+        .menu-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+        .gallery-grid img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; transition: 0.3s; }
+        .gallery-grid img:hover { transform: scale(1.05); }
+        
+        .upload-preview { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1rem 0; }
+        .upload-preview img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; }
+        .hidden { display: none !important; }
+        .back-btn { margin-bottom: 1rem; display: inline-block; cursor: pointer; color: var(--rose); text-decoration: none; }
+        .message-box { background: var(--soft-pink); border-radius: 12px; padding: 1rem; margin-top: 1rem; border-left: 4px solid var(--rose); }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1: Enter Name -->
+<div class="page active" id="pageName">
+    <div class="card">
+        <h2>👋 Welcome!</h2>
+        <p class="subhead">Please enter your name to join us 💌</p>
+        <input type="text" id="guestName" placeholder="Your full name here…">
+        <button class="btn" onclick="goToSelfie()">Continue →</button>
+    </div>
+</div>
+
+<!-- PAGE 2: Take Selfie -->
+<div class="page" id="pageSelfie">
+    <div class="card camera-box">
+        <h2>✨ Smile for us!</h2>
+        <p class="subhead">Take a quick photo to remember this moment 💫</p>
+        <video id="camera" autoplay playsinline></video>
+        <button class="btn" onclick="captureSelfie()">📸 Take Photo</button>
+        <img id="selfiePreview" alt="Your selfie">
+        <button class="btn hidden" id="confirmSelfie" onclick="goToWelcome()">✅ Looks Good — Continue</button>
+    </div>
+</div>
+
+<!-- PAGE 3: Welcome Screen -->
+<div class="page" id="pageWelcome">
+    <div class="welcome-screen">
+        <div class="heart">💍</div>
+        <h1>Welcome to Our Wedding</h1>
+        <p class="couple-names">Daniel ❤️ Yordanos</p>
+        <p class="subhead" id="welcomeMsg">We are so happy you're here, <span id="guestDisplay"></span>! 🥰</p>
+        <button class="btn" onclick="goToMenu()">Explore Our Day →</button>
+    </div>
+</div>
+
+<!-- PAGE 4: Main Menu -->
+<div class="page" id="pageMenu">
+    <a class="back-btn" href="#" onclick="goToWelcome()">← Back to Welcome</a>
+    <h2>💕 Explore Our Story</h2>
+    <p class="subhead">Choose a memory to view</p>
+    
+    <div class="menu-grid">
+        <div class="menu-card" onclick="showGallery('yordanosBaby')">
+            <div class="menu-icon">👶</div>
+            <h3>Yordanos as a Baby</h3>
+        </div>
+        <div class="menu-card" onclick="showGallery('danielBaby')">
+            <div class="menu-icon">👶</div>
+            <h3>Daniel as a Baby</h3>
+        </div>
+        <div class="menu-card" onclick="showGallery('togetherOld')">
+            <div class="menu-icon">📷</div>
+            <h3>Old Photos Together</h3>
+        </div>
+        <div class="menu-card" onclick="showGallery('engagement')">
+            <div class="menu-icon">💍</div>
+            <h3>Our Engagement</h3>
+        </div>
+        <div class="menu-card" onclick="showGallery('weddingDay')">
+            <div class="menu-icon">💒</div>
+            <h3>Wedding Day</h3>
+        </div>
+        <div class="menu-card" onclick="showUpload()">
+            <div class="menu-icon">📸</div>
+            <h3>Share Your Photos</h3>
+        </div>
+        <div class="menu-card" onclick="showWishes()">
+            <div class="menu-icon">💌</div>
+            <h3>Leave a Wish</h3>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 5: Photo Galleries -->
+<div class="page" id="pageGallery">
+    <a class="back-btn" href="#" onclick="goToMenu()">← Back to Menu</a>
+    <h2 id="galleryTitle"></h2>
+    <div class="gallery-grid" id="galleryImages"></div>
+</div>
+
+<!-- PAGE 6: Upload Photos -->
+<div class="page" id="pageUpload">
+    <a class="back-btn" href="#" onclick="goToMenu()">← Back to Menu</a>
+    <h2>📸 Share Your Best Photos</h2>
+    <p class="subhead">Upload up to 3 photos from our special day — only YOU will see them 💌</p>
+    
+    <div class="card">
+        <input type="file" id="photoUpload" accept="image/*" multiple onchange="previewUploads()">
+        <button class="btn" onclick="document.getElementById('photoUpload').click()">Choose Photos</button>
+        <p style="margin: 1rem 0; font-weight:bold;" id="uploadCount">0 / 3 selected</p>
+        <div class="upload-preview" id="uploadPreviewArea"></div>
+        <button class="btn" onclick="saveUploads()">💾 Save My Photos</button>
+        
+        <h3 style="margin-top: 2rem; text-align:center; color:var(--rose);">Your Saved Photos</h3>
+        <div class="upload-preview" id="savedPhotosArea"></div>
+    </div>
+</div>
+
+<!-- PAGE 7: Write Wishes -->
+<div class="page" id="pageWishes">
+    <a class="back-btn" href="#" onclick="goToMenu()">← Back to Menu</a>
+    <h2>💌 Write Your Wish</h2>
+    <p class="subhead">Share your love, advice or wishes with Daniel & Yordanos ✨</p>
+    
+    <div class="card">
+        <textarea id="wishInput" rows="5" placeholder="Dear Daniel & Yordanos, I wish you…"></textarea>
+        <button class="btn" onclick="saveWish()">💌 Send My Wish</button>
+        
+        <h3 style="margin-top: 2rem; text-align:center; color:var(--rose);">Your Message</h3>
+        <div id="savedWishBox" class="message-box hidden">
+            <p id="savedWishText"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- DATA — EDIT THESE WITH YOUR REAL PHOTOS LATER ---
+const galleries = {
+    yordanosBaby: {
+        title: "🌸 Yordanos as a Baby",
+        images: [
+            "https://via.placeholder.com/400x300/fde9e4/9c3d54?text=Yordanos+Baby+1",
+            "https://via.placeholder.com/400x300/fde9e4/9c3d54?text=Yordanos+Baby+2",
+            "https://via.placeholder.com/400x300/fde9e4/9c3d54?text=Yordanos+Baby+3"
+        ]
+    },
+    danielBaby: {
+        title: "🌿 Daniel as a Baby",
+        images: [
+            "https://via.placeholder.com/400x300/e4edf9/3d549c?text=Daniel+Baby+1",
+            "https://via.placeholder.com/400x300/e4edf9/3d549c?text=Daniel+Baby+2",
+            "https://via.placeholder.com/400x300/e4edf9/3d549c?text=Daniel+Baby+3"
+        ]
+    },
+    togetherOld: {
+        title: "💛 Memories Together",
+        images: [
+            "https://via.placeholder.com/400x300/f9f3e4/9c7e3d?text=Together+1",
+            "https://via.placeholder.com/400x300/f9f3e4/9c7e3d?text=Together+2",
+            "https://via.placeholder.com/400x300/f9f3e4/9c7e3d?text=Together+3"
+        ]
+    },
+    engagement: {
+        title: "💍 Our Engagement",
+        images: [
+            "https://via.placeholder.com/400x300/f3e4f9/7e3d9c?text=Engagement+1",
+            "https://via.placeholder.com/400x300/f3e4f9/7e3d9c?text=Engagement+2",
+            "https://via.placeholder.com/400x300/f3e4f9/7e3d9c?text=Engagement+3"
+        ]
+    },
+    weddingDay: {
+        title: "💒 Our Wedding Day",
+        images: [
+            "https://via.placeholder.com/400x300/fff9e4/9c6e3d?text=Wedding+1",
+            "https://via.placeholder.com/400x300/fff9e4/9c6e3d?text=Wedding+2",
+            "https://via.placeholder.com/400x300/fff9e4/9c6e3d?text=Wedding+3"
+        ]
+    }
+};
+
+let guestName = "";
+let selectedUploads = [];
+const MAX_PHOTOS = 3;
+
+// --- PAGE NAVIGATION ---
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function goToSelfie() {
+    guestName = document.getElementById('guestName').value.trim();
+    if (!guestName) return alert('Please enter your name first 💌');
+    startCamera();
+    showPage('pageSelfie');
+}
+
+function goToWelcome() {
+    document.getElementById('guestDisplay').textContent = guestName;
+    showPage('pageWelcome');
+}
+
+function goToMenu() {
+    showPage('pageMenu');
+}
+
+// --- CAMERA & SELFIE ---
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        document.getElementById('camera').srcObject = stream;
+    } catch {
+        console.log('Camera not available');
+    }
+}
+
+function captureSelfie() {
+    const video = document.getElementById('camera');
+    const preview = document.getElementById('selfiePreview');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    preview.src = canvas.toDataURL();
+    preview.style.display = 'block';
+    document.getElementById('confirmSelfie').classList.remove('hidden');
+}
+
+// --- GALLERIES ---
+function showGallery(key) {
+    const gallery = galleries[key];
+    document.getElementById('galleryTitle').textContent = gallery.title;
+    const container = document.getElementById('galleryImages');
+    container.innerHTML = '';
+    gallery.images.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = gallery.title;
+        container.appendChild(img);
+    });
+    showPage('pageGallery');
+}
+
+// --- UPLOADS ---
+function showUpload() {
+    selectedUploads = [];
+    document.getElementById('photoUpload').value = '';
+    document.getElementById('uploadPreviewArea').innerHTML = '';
+    document.getElementById('uploadCount').textContent = '0 / 3 selected';
+    loadSavedPhotos();
+    showPage('pageUpload');
+}
+
+function previewUploads() {
+    const files = Array.from(document.getElementById('photoUpload').files);
+    if (files.length > MAX_PHOTOS) return alert(`You can upload only ${MAX_PHOTOS} photos 💌`);
+    
+    selectedUploads = [];
+    const area = document.getElementById('uploadPreviewArea');
+    area.innerHTML = '';
+    
+    files.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            selectedUploads.push(e.target.result);
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            area.appendChild(img);
+            document.getElementById('uploadCount').textContent = `${selectedUploads.length} / ${MAX_PHOTOS} selected`;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function saveUploads() {
+    if (selectedUploads.length === 0) return alert('Please choose photos first 📸');
+    localStorage.setItem(`photos_${guestName}`, JSON.stringify(selectedUploads));
+    alert('✅ Photos saved! Only YOU can see them 💌');
+    loadSavedPhotos();
+}
+
+function loadSavedPhotos() {
+    const saved = JSON.parse(localStorage.getItem(`photos_${guestName}`) || '[]');
+    const area = document.getElementById('savedPhotosArea');
+    area.innerHTML = '';
+    saved.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        area.appendChild(img);
+    });
+}
+
+// --- WISHES ---
+function showWishes() {
+    loadSavedWish();
+    showPage('pageWishes');
+}
+
+function saveWish() {
+    const text = document.getElementById('wishInput').value.trim();
+    if (!text) return alert('Please write something first 💌');
+    localStorage.setItem(`wish_${guestName}`, text);
+    alert('✅ Your wish is saved! Only YOU and your device can see it 💌');
+    loadSavedWish();
+}
+
+function loadSavedWish() {
+    const saved = localStorage.getItem(`wish_${guestName}`);
+    const box = document.getElementById('savedWishBox');
+    if (saved) {
+        box.classList.remove('hidden');
+        document.getElementById('savedWishText').textContent = saved;
+    } else {
+        box.classList.add('hidden');
+    }
+}
+</script>
+</body>
+</html>
